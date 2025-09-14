@@ -443,4 +443,6 @@ const table = {
   "\\mathcal{X}": {"code": "TEX-C-58", "w": 900, "h": 750, "d": 0},
   "\\mathcal{Y}": {"code": "TEX-C-59", "w": 850, "h": 750, "d": 0},
   "\\mathcal{Z}": {"code": "TEX-C-5A", "w": 900, "h": 750, "d": 0},
+  "\\\\": {"code": "TEX-N-20", "w": 0, "h": 750, "d": 0},
+  "%": {"code": "TEX-N-25", "w": 500, "h": 750, "d": 0},
 };
