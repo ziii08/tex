@@ -82,6 +82,18 @@ class TeX {
   /// This allows better embedding of equations within TextWidgets.
   String tex2svg(String src,
       {displayStyle = false, debugMode = false, deltaYOffset = 128}) {
+    // Input validation
+    if (src.isEmpty) {
+      _error = "Empty TeX input";
+      return "";
+    }
+    
+    // Limit input length to prevent excessive processing
+    if (src.length > 10000) {
+      _error = "TeX input too long (max 10000 characters)";
+      return "";
+    }
+    
     if (src.contains("\\displaystyle")) {
       displayStyle = true;
       src = src.replaceAll("\\displaystyle", "");
@@ -161,8 +173,18 @@ class TeX {
       return output;
     } catch (e, stacktrace) {
       var s = stacktrace.toString();
-      print(s);
-      _error = e.toString();
+      print("TeX Error: $e");
+      print("Stack trace: $s");
+      
+      // Provide more detailed error information
+      if (e.toString().contains("Unknown token")) {
+        _error = "Unknown TeX token encountered. Please check your TeX syntax. Error: ${e.toString()}";
+      } else if (e.toString().contains("recursion") || e.toString().contains("stack")) {
+        _error = "TeX parsing exceeded maximum complexity. Please simplify your expression. Error: ${e.toString()}";
+      } else {
+        _error = "TeX parsing error: ${e.toString()}";
+      }
+      
       return "";
     }
   }

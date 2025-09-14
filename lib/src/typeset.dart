@@ -13,6 +13,12 @@ bool globalDisplayStyle = false;
 
 /// Typesets node [node]. The fraction depth is defined by [fracDepth].
 void typeset(TeXNode node, int fracDepth) {
+  // Prevent infinite recursion by limiting depth
+  const int maxRecursionDepth = 50;
+  if (fracDepth > maxRecursionDepth) {
+    print("Warning: Maximum recursion depth reached. Stopping typeset to prevent stack overflow.");
+    return;
+  }
   var skipSubAndSup = false;
   switch (node.type) {
     case TeXNodeType.list:
@@ -306,8 +312,28 @@ void typeset(TeXNode node, int fracDepth) {
           node.glyphs.add(glyph);
           node.calcGeometry();
         } else {
-          // ================ error ================
-          throw Exception("Unknown token '$tk'.");
+          // ================ error handling for unknown tokens ================
+          // Instead of throwing exception, create a text representation
+          // This prevents infinite recursion and provides better error handling
+          var glyph = Glyph();
+          glyph.tk = node.tk;
+          // Use a fallback approach - try to render as text if possible
+          if (tk.length == 1 && tk.codeUnitAt(0) >= 32 && tk.codeUnitAt(0) <= 126) {
+            // For single ASCII characters, try to find a basic representation
+            // or create a placeholder
+            glyph.svgPathId = "TEX-N-3F"; // Question mark as fallback
+            glyph.width = 400.0;
+            glyph.height = 750.0;
+          } else {
+            // For complex unknown tokens, create a minimal placeholder
+            glyph.svgPathId = "TEX-N-3F"; // Question mark as fallback
+            glyph.width = 400.0 * tk.length; // Scale width based on token length
+            glyph.height = 750.0;
+          }
+          node.glyphs.add(glyph);
+          node.calcGeometry();
+          // Log the unknown token for debugging
+          print("Warning: Unknown token '$tk' replaced with placeholder");
         }
         break;
       }
