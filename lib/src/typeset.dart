@@ -65,14 +65,14 @@ void typeset(TeXNode node, int fracDepth) {
           node.calcGeometry();
           skipSubAndSup = true;
           //node.postfixSpacing = 150;
-        } else if (tk == "\\mathbb" || tk == "\\mathcal" || tk == "\\text") {
+        } else if (tk == "\\mathbb" || tk == "\\mathcal" || tk == "\\mathbf" || tk == "\\text") {
           // ================ font ================
           setFont(node.args[0], tk);
           typeset(node.args[0], fracDepth);
           node.calcGeometry();
           node.glyphs.addAll(node.args[0].glyphs);
           node.calcGeometry();
-        } else if (tk == "\\frac") {
+        } else if (tk == "\\frac" || tk == "\\tfrac" || tk == "\\dfrac") {
           // ================ fraction ================
           var numerator = node.args[0];
           var denominator = node.args[1];
